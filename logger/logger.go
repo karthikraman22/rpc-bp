@@ -7,6 +7,7 @@ import (
 	"github.com/go-logr/zapr"
 	"github.com/karthikraman22/rpc-bp/operation"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 type Logger = logr.Logger
@@ -37,9 +38,15 @@ func init() {
 	operationMode = operation.GetOperationMode()
 	switch operationMode {
 	case operation.DEVELOPMENT:
-		zapLog, err = zap.NewDevelopment()
+		cfg := zap.NewDevelopmentConfig()
+		cfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+		cfg.DisableStacktrace = true
+		zapLog, err = cfg.Build()
 	case operation.RELEASE:
-		zapLog, err = zap.NewProduction()
+		cfg := zap.NewProductionConfig()
+		cfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+		cfg.DisableStacktrace = true
+		zapLog, err = cfg.Build()
 	default:
 		zapLog = zap.NewNop()
 	}
