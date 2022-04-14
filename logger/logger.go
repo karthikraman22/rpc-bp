@@ -3,9 +3,9 @@ package logger
 import (
 	"fmt"
 
-	"achuala.in/rpc-bp/operation"
 	"github.com/go-logr/logr"
 	"github.com/go-logr/zapr"
+	"github.com/karthikraman22/rpc-bp/operation"
 	"go.uber.org/zap"
 )
 

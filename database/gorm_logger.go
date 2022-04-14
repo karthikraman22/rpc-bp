@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"achuala.in/rpc-bp/logger"
+	"github.com/karthikraman22/rpc-bp/logger"
 	gorm_logger "gorm.io/gorm/logger"
 )
 

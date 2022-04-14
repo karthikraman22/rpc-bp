@@ -3,7 +3,7 @@ package config
 import (
 	"strings"
 
-	"achuala.in/rpc-bp/logger"
+	"github.com/karthikraman22/logger"
 
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"

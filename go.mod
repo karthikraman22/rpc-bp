@@ -1,4 +1,4 @@
-module achuala.in/rpc-bp
+module github.com/karthikraman22/rpc-bp
 
 go 1.18
 

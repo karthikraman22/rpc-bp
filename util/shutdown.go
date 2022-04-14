@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"time"
 
-	"achuala.in/rpc-bp/logger"
+	"github.com/karthikraman22/rpc-bp/logger"
 )
 
 const (

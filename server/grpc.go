@@ -5,11 +5,11 @@ import (
 	"net"
 	"time"
 
-	"achuala.in/rpc-bp/logger"
-	"achuala.in/rpc-bp/util"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
+	"github.com/karthikraman22/rpc-bp/logger"
+	"github.com/karthikraman22/rpc-bp/util"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"

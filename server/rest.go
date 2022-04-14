@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"time"
 
-	"achuala.in/rpc-bp/logger"
-	"achuala.in/rpc-bp/util"
 	"github.com/gin-gonic/gin"
+	"github.com/karthikraman22/rpc-bp/logger"
+	"github.com/karthikraman22/rpc-bp/util"
 )
 
 // Server is the implementation of an API Server

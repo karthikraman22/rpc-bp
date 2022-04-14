@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 
-	"achuala.in/rpc-bp/config"
+	"github.com/karthikraman22/rpc-bp/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
