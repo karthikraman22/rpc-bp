@@ -16,5 +16,10 @@ func InitDatabase(cfg *config.Config) (*gorm.DB, error) {
 		cfg.String("db.database"), cfg.String("db.sslmode"))
 
 	gormCfg := gorm.Config{Logger: NewGormLogger()}
-	return gorm.Open(postgres.New(postgres.Config{DSN: connectionString}), &gormCfg)
+	db, err := gorm.Open(postgres.New(postgres.Config{DSN: connectionString}), &gormCfg)
+	if err != nil {
+		panic(err)
+	}
+	db.LogMode(true)
+	return db, nil
 }
