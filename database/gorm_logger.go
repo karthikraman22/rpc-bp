@@ -32,5 +32,4 @@ func (gl *GormLogger) Error(ctx context.Context, m string, v ...interface{}) {
 	gl.log.Error(ctx.Err(), m, v)
 }
 func (gl *GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64), err error) {
-
 }
