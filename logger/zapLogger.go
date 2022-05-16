@@ -12,18 +12,22 @@ type zapLogger struct {
 	logger *zap.Logger
 }
 
-func newZapLogger(name string) *zapLogger {
+func newZapLoggerWithOptions(name string, options ...zap.Option) *zapLogger {
 
 	logCfg := zap.NewProductionConfig()
 	logCfg.DisableStacktrace = true
 	logCfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	logger, err := logCfg.Build(zap.AddCaller())
+	logger, err := logCfg.Build()
 
 	if err != nil {
 		panic(fmt.Sprintf("failed to setup logging: %v", err))
 	}
 
-	return &zapLogger{name: name, logger: logger.Named(name)}
+	return &zapLogger{name: name, logger: logger.WithOptions(options...).Named(name)}
+}
+
+func newZapLogger(name string) *zapLogger {
+	return newZapLoggerWithOptions(name, zap.AddCaller(), zap.AddCallerSkip(1))
 }
 
 // Info logs a message at level Info.

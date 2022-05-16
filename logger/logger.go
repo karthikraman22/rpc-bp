@@ -3,6 +3,8 @@ package logger
 import (
 	"strings"
 	"sync"
+
+	"go.uber.org/zap"
 )
 
 const (
@@ -89,6 +91,20 @@ func WithName(name string) Logger {
 	logger, ok := globalLoggers[name]
 	if !ok {
 		logger = newZapLogger(name)
+		globalLoggers[name] = logger
+	}
+
+	return logger
+}
+
+// NewLogger creates new Logger instance.
+func WithNameOptions(name string, options ...zap.Option) Logger {
+	globalLoggersLock.Lock()
+	defer globalLoggersLock.Unlock()
+
+	logger, ok := globalLoggers[name]
+	if !ok {
+		logger = newZapLoggerWithOptions(name, options...)
 		globalLoggers[name] = logger
 	}
 

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/karthikraman22/rpc-bp/logger"
+	"go.uber.org/zap"
 	gorm_logger "gorm.io/gorm/logger"
 )
 
@@ -13,7 +14,7 @@ type GormLogger struct {
 }
 
 func NewGormLogger() *GormLogger {
-	return &GormLogger{log: logger.WithName("gorm")}
+	return &GormLogger{log: logger.WithNameOptions("gorm", zap.AddCaller(), zap.AddCallerSkip(2))}
 }
 
 func (gl *GormLogger) LogMode(level gorm_logger.LogLevel) gorm_logger.Interface {
