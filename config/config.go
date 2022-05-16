@@ -20,7 +20,8 @@ func NewConfig(fname string, envPrefix string) (*Config, error) {
 	// Global koanf instance. Use "." as the key path delimiter. This can be "/" or any character.
 	var conf = koanf.New(".")
 
-	log.Info("config_file", fname, "env_prefix", envPrefix)
+	log.Info("loading configurations", "config_file", fname, "env_prefix", envPrefix)
+
 	// Load JSON config.
 	if err := conf.Load(file.Provider(fname), yaml.Parser()); err != nil {
 		log.Error(err, "config_file_load_error")
