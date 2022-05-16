@@ -20,6 +20,5 @@ func InitDatabase(cfg *config.Config) (*gorm.DB, error) {
 	if err != nil {
 		panic(err)
 	}
-	db.LogMode(true)
 	return db, nil
 }
