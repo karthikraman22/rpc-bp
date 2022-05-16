@@ -29,7 +29,7 @@ func (gl *GormLogger) Warn(ctx context.Context, m string, v ...interface{}) {
 }
 
 func (gl *GormLogger) Error(ctx context.Context, m string, v ...interface{}) {
-	gl.log.Error(m, v)
+	gl.log.Error(v[0].(error), m, nil)
 }
 
 func (gl *GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64), err error) {

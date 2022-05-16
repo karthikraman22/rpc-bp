@@ -27,51 +27,65 @@ func newZapLogger(name string) *zapLogger {
 }
 
 // Info logs a message at level Info.
-func (l *zapLogger) Info(args ...interface{}) {
-	l.logger.Sugar().Info(args...)
-}
-
-// Infof logs a message at level Info.
-func (l *zapLogger) Infof(format string, args ...interface{}) {
-	l.logger.Sugar().Infof(format, args...)
+func (zl *zapLogger) Info(msg string, keysAndValues ...interface{}) {
+	if checkedEntry := zl.logger.Check(zap.InfoLevel, msg); checkedEntry != nil {
+		checkedEntry.Write(zl.handleFields(keysAndValues)...)
+	}
 }
 
 // Debug logs a message at level Debug.
-func (l *zapLogger) Debug(args ...interface{}) {
-	l.logger.Sugar().Debug(args...)
-}
-
-// Debugf logs a message at level Debug.
-func (l *zapLogger) Debugf(format string, args ...interface{}) {
-	l.logger.Sugar().Debugf(format, args...)
+func (zl *zapLogger) Debug(msg string, keysAndValues ...interface{}) {
+	if checkedEntry := zl.logger.Check(zap.DebugLevel, msg); checkedEntry != nil {
+		checkedEntry.Write(zl.handleFields(keysAndValues)...)
+	}
 }
 
 // Warn logs a message at level Warn.
-func (l *zapLogger) Warn(args ...interface{}) {
-	l.logger.Sugar().Warn(args...)
-}
-
-// Warnf logs a message at level Warn.
-func (l *zapLogger) Warnf(format string, args ...interface{}) {
-	l.logger.Sugar().Warnf(format, args...)
+func (zl *zapLogger) Warn(msg string, keysAndValues ...interface{}) {
+	if checkedEntry := zl.logger.Check(zap.WarnLevel, msg); checkedEntry != nil {
+		checkedEntry.Write(zl.handleFields(keysAndValues)...)
+	}
 }
 
 // Error logs a message at level Error.
-func (l *zapLogger) Error(args ...interface{}) {
-	l.logger.Sugar().Error(args...)
-}
-
-// Errorf logs a message at level Error.
-func (l *zapLogger) Errorf(format string, args ...interface{}) {
-	l.logger.Sugar().Errorf(format, args...)
+func (zl *zapLogger) Error(errVal error, msg string, keysAndValues ...interface{}) {
+	if checkedEntry := zl.logger.Check(zap.ErrorLevel, msg); checkedEntry != nil {
+		checkedEntry.Write(zl.handleFields(keysAndValues, zap.NamedError("error", errVal))...)
+	}
 }
 
 // Fatal logs a message at level Fatal then the process will exit with status set to 1.
-func (l *zapLogger) Fatal(args ...interface{}) {
-	l.logger.Sugar().Fatal(args...)
+func (zl *zapLogger) Fatal(msg string, keysAndValues ...interface{}) {
+	if checkedEntry := zl.logger.Check(zap.FatalLevel, msg); checkedEntry != nil {
+		checkedEntry.Write(zl.handleFields(keysAndValues)...)
+	}
 }
 
-// Fatalf logs a message at level Fatal then the process will exit with status set to 1.
-func (l *zapLogger) Fatalf(format string, args ...interface{}) {
-	l.logger.Sugar().Fatalf(format, args...)
+func (zl *zapLogger) handleFields(args []interface{}, additional ...zap.Field) []zap.Field {
+	if len(args) == 0 {
+		// Slightly slower fast path when we need to inject "v".
+		return additional
+	}
+	numFields := len(args)/2 + len(additional)
+	fields := make([]zap.Field, 0, numFields)
+	for i := 0; i < len(args); {
+		// make sure this isn't a mismatched key
+		if i == len(args)-1 {
+			zl.logger.WithOptions(zap.AddCallerSkip(1)).DPanic("odd number of arguments passed as key-value pairs for logging", zap.Any("ignored key", args[i]))
+			break
+		}
+		// process a key-value pair,
+		// ensuring that the key is a string
+		key, val := args[i], args[i+1]
+		keyStr, isString := key.(string)
+		if !isString {
+			// if the key isn't a string, DPanic and stop logging
+			zl.logger.WithOptions(zap.AddCallerSkip(1)).DPanic("non-string key argument passed to logging, ignoring all later arguments", zap.Any("invalid key", key))
+			break
+		}
+
+		fields = append(fields, zap.Any(keyStr, val))
+		i += 2
+	}
+	return append(fields, additional...)
 }

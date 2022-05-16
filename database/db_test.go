@@ -12,9 +12,6 @@ func TestInitDb(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	db, err := InitDatabase(cfg)
-	if err != nil {
-		fmt.Println(err)
-	}
+	db, _ := InitDatabase(cfg)
 	fmt.Printf("db.ConnPool: %v\n", db.ConnPool)
 }

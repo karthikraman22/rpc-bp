@@ -51,25 +51,15 @@ var (
 // Logger includes the logging api sets.
 type Logger interface {
 	// Info logs a message at level Info.
-	Info(args ...interface{})
-	// Infof logs a message at level Info.
-	Infof(format string, args ...interface{})
+	Info(msg string, keysAndValues ...interface{})
 	// Debug logs a message at level Debug.
-	Debug(args ...interface{})
-	// Debugf logs a message at level Debug.
-	Debugf(format string, args ...interface{})
+	Debug(msg string, keysAndValues ...interface{})
 	// Warn logs a message at level Warn.
-	Warn(args ...interface{})
-	// Warnf logs a message at level Warn.
-	Warnf(format string, args ...interface{})
+	Warn(msg string, keysAndValues ...interface{})
 	// Error logs a message at level Error.
-	Error(args ...interface{})
-	// Errorf logs a message at level Error.
-	Errorf(format string, args ...interface{})
+	Error(errVal error, keysAndValues string, args ...interface{})
 	// Fatal logs a message at level Fatal then the process will exit with status set to 1.
-	Fatal(args ...interface{})
-	// Fatalf logs a message at level Fatal then the process will exit with status set to 1.
-	Fatalf(format string, args ...interface{})
+	Fatal(msg string, keysAndValues ...interface{})
 }
 
 // toLogLevel converts to LogLevel.
