@@ -4,8 +4,6 @@ go 1.18
 
 require (
 	github.com/gin-gonic/gin v1.7.7
-	github.com/go-logr/logr v1.2.3
-	github.com/go-logr/zapr v1.2.3
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/knadh/koanf v1.4.1
 	go.uber.org/zap v1.21.0
@@ -39,6 +37,7 @@ require (
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect

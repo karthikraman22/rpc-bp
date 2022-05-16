@@ -7,7 +7,7 @@ version: 0.1
 db:
   host: localhost
   port: 5432
-  user: upiswitch_user
+  user: upiswitch_user1
   password: ZAQ1@wsx
   database: upiswitch
   sslmode: disable

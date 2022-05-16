@@ -1,78 +1,118 @@
 package logger
 
 import (
-	"fmt"
-
-	"github.com/go-logr/logr"
-	"github.com/go-logr/zapr"
-	"github.com/karthikraman22/rpc-bp/operation"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-)
-
-type Logger = logr.Logger
-
-var (
-	zapLog        *zap.Logger
-	operationMode operation.OperationMode
-	logMode       string
+	"strings"
+	"sync"
 )
 
 const (
-	DebugLevel = 1
-	InfoLevel  = 0
-	WarnLevel  = -1
-	ErrorLevel = -2
+	// LogTypeLog is normal log type.
+	LogTypeLog = "log"
+	// LogTypeRequest is Request log type.
+	LogTypeRequest = "request"
+
+	// Field names that defines Dapr log schema.
+	logFieldTimeStamp = "time"
+	logFieldLevel     = "level"
+	logFieldType      = "type"
+	logFieldScope     = "scope"
+	logFieldMessage   = "msg"
+	logFieldInstance  = "instance"
+	logFieldDaprVer   = "ver"
+	logFieldAppID     = "app_id"
 )
 
-func init() {
-	var err error
+// LogLevel is Dapr Logger Level type.
+type LogLevel string
 
-	// from build flag
-	if logMode == "noop" {
-		zapLog = zap.NewNop()
-		return
-	}
+const (
+	// DebugLevel has verbose message.
+	DebugLevel LogLevel = "debug"
+	// InfoLevel is default log level.
+	InfoLevel LogLevel = "info"
+	// WarnLevel is for logging messages about possible issues.
+	WarnLevel LogLevel = "warn"
+	// ErrorLevel is for logging errors.
+	ErrorLevel LogLevel = "error"
+	// FatalLevel is for logging fatal messages. The system shuts down after logging the message.
+	FatalLevel LogLevel = "fatal"
 
-	// from env
-	operationMode = operation.GetOperationMode()
-	switch operationMode {
-	case operation.DEVELOPMENT:
-		cfg := zap.NewDevelopmentConfig()
-		cfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-		cfg.DisableStacktrace = true
-		zapLog, err = cfg.Build()
-	case operation.RELEASE:
-		cfg := zap.NewProductionConfig()
-		cfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-		cfg.DisableStacktrace = true
-		zapLog, err = cfg.Build()
-	default:
-		zapLog = zap.NewNop()
-	}
+	// UndefinedLevel is for undefined log level.
+	UndefinedLevel LogLevel = "undefined"
+)
 
-	if err != nil {
-		panic(fmt.Sprintf("failed to setup logging: %v", err))
-	}
+// globalLoggers is the collection of Logger that is shared globally.
+// TODO: User will disable or enable logger on demand.
+var (
+	globalLoggers     = map[string]Logger{}
+	globalLoggersLock = sync.RWMutex{}
+)
+
+// Logger includes the logging api sets.
+type Logger interface {
+	// Info logs a message at level Info.
+	Info(args ...interface{})
+	// Infof logs a message at level Info.
+	Infof(format string, args ...interface{})
+	// Debug logs a message at level Debug.
+	Debug(args ...interface{})
+	// Debugf logs a message at level Debug.
+	Debugf(format string, args ...interface{})
+	// Warn logs a message at level Warn.
+	Warn(args ...interface{})
+	// Warnf logs a message at level Warn.
+	Warnf(format string, args ...interface{})
+	// Error logs a message at level Error.
+	Error(args ...interface{})
+	// Errorf logs a message at level Error.
+	Errorf(format string, args ...interface{})
+	// Fatal logs a message at level Fatal then the process will exit with status set to 1.
+	Fatal(args ...interface{})
+	// Fatalf logs a message at level Fatal then the process will exit with status set to 1.
+	Fatalf(format string, args ...interface{})
 }
 
-// Creates a new logger with the given options
-func WithOptions(opts ...zap.Option) logr.Logger {
-	switch operationMode {
-	case operation.DEVELOPMENT:
-		return zapr.NewLogger(zapLog.WithOptions(opts...)).V(DebugLevel)
-	case operation.RELEASE:
-		return zapr.NewLogger(zapLog.WithOptions(opts...)).V(InfoLevel)
-	default:
-		return zapr.NewLogger(zapLog.WithOptions(opts...)).V(ErrorLevel)
+// toLogLevel converts to LogLevel.
+func toLogLevel(level string) LogLevel {
+	switch strings.ToLower(level) {
+	case "debug":
+		return DebugLevel
+	case "info":
+		return InfoLevel
+	case "warn":
+		return WarnLevel
+	case "error":
+		return ErrorLevel
+	case "fatal":
+		return FatalLevel
 	}
+
+	// unsupported log level by Dapr
+	return UndefinedLevel
 }
 
-// Creates a new logger with the given name
-func WithName(name string) logr.Logger {
-	return WithOptions(zap.AddCaller()).WithName(name)
+// NewLogger creates new Logger instance.
+func WithName(name string) Logger {
+	globalLoggersLock.Lock()
+	defer globalLoggersLock.Unlock()
+
+	logger, ok := globalLoggers[name]
+	if !ok {
+		logger = newZapLogger(name)
+		globalLoggers[name] = logger
+	}
+
+	return logger
 }
 
-func UnderLying() *zap.Logger {
-	return zapLog
+func getLoggers() map[string]Logger {
+	globalLoggersLock.RLock()
+	defer globalLoggersLock.RUnlock()
+
+	l := map[string]Logger{}
+	for k, v := range globalLoggers {
+		l[k] = v
+	}
+
+	return l
 }

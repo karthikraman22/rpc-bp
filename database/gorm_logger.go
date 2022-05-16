@@ -18,7 +18,6 @@ func NewGormLogger() *GormLogger {
 
 func (gl *GormLogger) LogMode(level gorm_logger.LogLevel) gorm_logger.Interface {
 	newlogger := *gl
-	gl.log.V(int(level))
 	return &newlogger
 }
 
@@ -26,11 +25,13 @@ func (gl *GormLogger) Info(ctx context.Context, m string, v ...interface{}) {
 	gl.log.Info(m, v)
 }
 func (gl *GormLogger) Warn(ctx context.Context, m string, v ...interface{}) {
-	gl.log.Info(m, v)
+	gl.log.Warn(m, v)
 }
+
 func (gl *GormLogger) Error(ctx context.Context, m string, v ...interface{}) {
-	gl.log.Error(ctx.Err(), m, "values", v)
+	gl.log.Error(m, v)
 }
+
 func (gl *GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64), err error) {
 	elapsed := time.Since(begin)
 	sql, rows := fc()
