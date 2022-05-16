@@ -8,7 +8,10 @@ import (
 )
 
 func TestInitDb(t *testing.T) {
-	cfg := config.NewConfig("../test-conf.yaml", "DB_TEST_")
+	cfg, err := config.NewConfig("../test-conf.yaml", "DB_TEST_")
+	if err != nil {
+		fmt.Println(err)
+	}
 	db, err := InitDatabase(cfg)
 	if err != nil {
 		fmt.Println(err)
