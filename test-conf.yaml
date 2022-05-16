@@ -1,0 +1,14 @@
+application:
+  name: janitor
+port: 9669
+kek: aead_keyset.bin
+profile: release #release|debug
+version: 0.1
+db:
+  host: localhost
+  port: 5432
+  user: upiswitch_user
+  password: ZAQ1@wsx
+  database: upiswitch
+  sslmode: disable
+  driver: "postgres"
