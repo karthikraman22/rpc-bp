@@ -17,8 +17,5 @@ func InitDatabase(cfg *config.Config) (*gorm.DB, error) {
 
 	gormCfg := gorm.Config{Logger: NewGormLogger()}
 	db, err := gorm.Open(postgres.New(postgres.Config{DSN: connectionString}), &gormCfg)
-	if err != nil {
-		panic(err)
-	}
-	return db, nil
+	return db, err
 }
