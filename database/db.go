@@ -22,8 +22,6 @@ func InitDatabase(cfg *config.Config) (*gorm.DB, error) {
 	} else {
 		sqlDB, err := db.DB()
 		if err == nil {
-			// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
-			sqlDB.SetMaxIdleConns(2)
 			// SetMaxOpenConns sets the maximum number of open connections to the database.
 			sqlDB.SetMaxOpenConns(cfg.Int("db.poolSize"))
 			sqlDB.SetConnMaxLifetime(time.Hour)
