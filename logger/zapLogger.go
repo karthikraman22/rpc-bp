@@ -15,7 +15,7 @@ type zapLogger struct {
 func newZapLoggerWithOptions(name string, options ...zap.Option) *zapLogger {
 
 	logCfg := zap.NewProductionConfig()
-	logCfg.DisableStacktrace = true
+	//logCfg.DisableStacktrace = true
 	logCfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	logger, err := logCfg.Build()
 
