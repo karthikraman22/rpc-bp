@@ -16,27 +16,40 @@ func durationToMilliseconds(duration time.Duration) float32 {
 	return float32(duration.Nanoseconds()/1000) / 1000
 }
 
+type contextKey string
+
+const (
+	CORRELATION_ID contextKey = "x-correlation-id"
+)
+
+func (c contextKey) String() string {
+	return string(c)
+}
+
 // Unary server interceptor
 func UnaryServerInterceptor(log Logger) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		start := time.Now()
 
-		// Calls the handler
-		resp, err := handler(ctx, req)
-
-		service := path.Dir(info.FullMethod)[1:]
-		method := path.Base(info.FullMethod)
-		duration := durationToMilliseconds(time.Since(start))
-		code := status.Code(err)
 		md, _ := metadata.FromIncomingContext(ctx)
 		peer_ip, peer_port, scheme := getRemoteAddressFromMetaData(md, ctx)
+		service := path.Dir(info.FullMethod)[1:]
+		method := path.Base(info.FullMethod)
 
-		correlationId := md["x-correlation-id"]
+		correlationId := md[CORRELATION_ID.String()]
+
+		newCtx := context.WithValue(ctx, CORRELATION_ID, correlationId)
+
+		// Calls the handler
+		resp, err := handler(newCtx, req)
+
+		duration := durationToMilliseconds(time.Since(start))
+		code := status.Code(err)
 
 		if err != nil {
-			log.Info("failed", "x-correlation-id", correlationId, "meta", md, "duration_ms", duration, "code", code, "service", service, "method", method, "raddr", (peer_ip + ":" + peer_port), "scheme", scheme, "error", err)
+			log.Info("failed", CORRELATION_ID.String(), correlationId, "meta", md, "duration_ms", duration, "code", code, "service", service, "method", method, "raddr", (peer_ip + ":" + peer_port), "scheme", scheme, "error", err)
 		} else {
-			log.Info("success", "x-correlation-id", correlationId, "meta", md, "duration_ms", duration, "code", code, "service", service, "method", method, "raddr", (peer_ip + ":" + peer_port), "scheme", scheme)
+			log.Info("success", CORRELATION_ID.String(), correlationId, "meta", md, "duration_ms", duration, "code", code, "service", service, "method", method, "raddr", (peer_ip + ":" + peer_port), "scheme", scheme)
 		}
 
 		return resp, err

@@ -17,6 +17,7 @@ func newZapLoggerWithOptions(name string, options ...zap.Option) *zapLogger {
 	logCfg := zap.NewProductionConfig()
 	//logCfg.DisableStacktrace = true
 	logCfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	logCfg.EncoderConfig.TimeKey = "@timestamp"
 	logger, err := logCfg.Build()
 
 	if err != nil {

@@ -51,7 +51,7 @@ func (s *RestServer) RegisterService(f func(*gin.Engine)) {
 
 // Serve starts the api listeners of the Server
 func (s *RestServer) Serve(apiAddr string) error {
-	// Setup grpc listener
+	// Setup listener
 	apiLis, err := net.Listen("tcp", apiAddr)
 	if err != nil {
 		return err
