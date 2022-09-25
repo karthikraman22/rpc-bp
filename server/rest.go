@@ -32,7 +32,9 @@ type RestServiceRegistrar interface {
 }
 
 // NewServer returns a new configured instance of Server
-func NewRestServer(name string, keepAlive bool) *RestServer {
+func NewRestServer(name, profile string, keepAlive bool) *RestServer {
+
+	gin.SetMode(profile)
 
 	router := gin.Default()
 
