@@ -38,7 +38,5 @@ func (gl *GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql
 	sql, rows := fc()
 	if err != nil {
 		gl.log.Error(err, "trace", "sql", sql, "rows_affected", rows, "elapsed", time.Duration(elapsed))
-	} else {
-		gl.log.Info("trace", "sql", sql, "rows_affected", rows, "elapsed", time.Duration(elapsed))
 	}
 }
