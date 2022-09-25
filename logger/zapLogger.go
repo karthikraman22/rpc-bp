@@ -19,6 +19,7 @@ func newZapLoggerWithOptions(name string, options ...zap.Option) *zapLogger {
 	//logCfg.DisableStacktrace = true
 	logCfg.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout(time.RFC3339)
 	logCfg.EncoderConfig.TimeKey = "@timestamp"
+	logCfg.EncoderConfig.MessageKey = "message"
 	logger, err := logCfg.Build()
 
 	if err != nil {
