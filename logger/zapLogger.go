@@ -2,6 +2,7 @@ package logger
 
 import (
 	"fmt"
+	"time"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -16,7 +17,7 @@ func newZapLoggerWithOptions(name string, options ...zap.Option) *zapLogger {
 
 	logCfg := zap.NewProductionConfig()
 	//logCfg.DisableStacktrace = true
-	logCfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	logCfg.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout(time.RFC3339)
 	logCfg.EncoderConfig.TimeKey = "@timestamp"
 	logger, err := logCfg.Build()
 
